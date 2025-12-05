@@ -1,11 +1,21 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { games } from "../data/games";
+import { useEffect, useState } from "react";
+import { fetchGameById } from "../services/gamesService";
 
 export default function GameDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const game = games.find(g => g.id === Number(id));
+  const [game, setGame] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (!id) return;
+    fetchGameById(Number(id))
+      .then(setGame)
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p>Carregando jogo...</p>;
   if (!game) return <p>Jogo não encontrado.</p>;
 
   return (

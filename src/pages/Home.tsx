@@ -1,14 +1,21 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { games } from "../data/games";
 import CategoriesMenu from "../components/CategoriesMenu";
+import { fetchGames } from "../services/gamesService";
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [games, setGames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredGames = selectedCategory
-    ? games.filter(game => game.plataforma === selectedCategory)
-    : games;
+  useEffect(() => {
+    setLoading(true);
+    fetchGames(selectedCategory)
+      .then(setGames)
+      .finally(() => setLoading(false));
+  }, [selectedCategory]);
+
+  if (loading) return <p>Carregando jogos...</p>;
 
   return (
     <div className="container">
@@ -29,45 +36,42 @@ export default function Home() {
         gap: "20px",
         marginTop: "20px"
       }}>
-        {filteredGames.map(game => (
+        {games.map(game => (
           <Link 
-          key={game.id} 
-          to={`/jogo/${game.id}`} 
-          style={{ textDecoration: "none", color: "inherit" }}
-        >
-          <div className="card">
-            <img src={game.imagem} alt={game.nome} />
-            <h3>{game.nome}</h3>
-            <p>{game.plataforma}</p>
+            key={game.id} 
+            to={`/jogo/${game.id}`} 
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div className="card">
+              <img src={game.imagem} alt={game.nome} />
+              <h3>{game.nome}</h3>
+              <p>{game.plataforma}</p>
 
               <div className="card-buttons">
-              <button 
-                className="buy-btn"
-                onClick={(e) => {
-                  e.preventDefault(); // impede o link de navegar
-                  // Aqui pode adicionar lógica para adicionar ao carrinho
-                  alert(`${game.nome} adicionado ao carrinho!`);
-                }}
-              >
-                COMPRAR
-              </button>
+                <button 
+                  className="buy-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    alert(`${game.nome} adicionado ao carrinho!`);
+                  }}
+                >
+                  COMPRAR
+                </button>
 
-              <button
-                className="price-btn"
-                disabled
-                aria-disabled="true"
-                tabIndex={-1}
-                onClick={(e) => e.preventDefault()}
-              >
-                {game.preco}€
-              </button>
+                <button
+                  className="price-btn"
+                  disabled
+                  aria-disabled="true"
+                  tabIndex={-1}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {game.preco}€
+                </button>
+              </div>
             </div>
-          </div>
-        </Link>
+          </Link>
         ))}
       </div>
-
-      {/* botão 'Ver todos os jogos' removido conforme solicitado */}
     </div>
   );
 }

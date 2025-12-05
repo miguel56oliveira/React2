@@ -1,21 +1,36 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { games } from "../data/games";
+import { fetchGames } from "../services/gamesService";
 
 export default function Search() {
-  const { texto } = useParams();
+  const { texto } = useParams<{ texto: string }>();
+  const [games, setGames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const resultados = games.filter(g =>
-    g.nome.toLowerCase().includes(String(texto).toLowerCase())
+  useEffect(() => {
+    setLoading(true);
+    fetchGames()
+      .then(setGames)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <p>Carregando resultados...</p>;
+
+  const resultados = games.filter(game =>
+    game.nome.toLowerCase().includes(String(texto).toLowerCase())
   );
 
   return (
-    <div>
+    <div className="container">
       <h1>Resultados para: "{texto}"</h1>
-      {resultados.map(game => (
-        <p key={game.id}>{game.nome}</p>
-      ))}
 
-      {resultados.length === 0 && <p>Nenhum jogo encontrado.</p>}
+      {resultados.length > 0 ? (
+        resultados.map(game => (
+          <p key={game.id}>{game.nome}</p>
+        ))
+      ) : (
+        <p>Nenhum jogo encontrado.</p>
+      )}
     </div>
   );
 }

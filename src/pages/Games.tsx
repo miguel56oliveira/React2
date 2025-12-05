@@ -1,20 +1,26 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { games } from "../data/games";
 import CategoriesMenu from "../components/CategoriesMenu";
+import { fetchGames } from "../services/gamesService";
 
 export default function Games() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [games, setGames] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredGames = selectedCategory
-    ? games.filter(game => game.plataforma === selectedCategory)
-    : games;
+  useEffect(() => {
+    setLoading(true);
+    fetchGames(selectedCategory)
+      .then(setGames)
+      .finally(() => setLoading(false));
+  }, [selectedCategory]);
+
+  if (loading) return <p>Carregando jogos...</p>;
 
   return (
     <div className="container">
       <h1>Lista de Videojogos</h1>
 
-      {/* Menu de categorias */}
       <CategoriesMenu onSelect={setSelectedCategory} />
 
       {selectedCategory && (
@@ -29,7 +35,7 @@ export default function Games() {
         gap: "20px",
         marginTop: "20px"
       }}>
-        {filteredGames.map(game => (
+        {games.map(game => (
           <Link 
             key={game.id} 
             to={`/jogo/${game.id}`} 
@@ -39,19 +45,16 @@ export default function Games() {
               <img src={game.imagem} alt={game.nome} />
               <h3>{game.nome}</h3>
               <p>{game.plataforma}</p>
-
               <div className="card-buttons">
                 <button 
                   className="buy-btn"
                   onClick={(e) => {
-                    e.preventDefault(); // impede o link de navegar
-                    // Aqui pode adicionar lógica para adicionar ao carrinho
+                    e.preventDefault();
                     alert(`${game.nome} adicionado ao carrinho!`);
                   }}
                 >
                   COMPRAR
                 </button>
-
                 <button
                   className="price-btn"
                   disabled
