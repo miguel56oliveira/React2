@@ -7,7 +7,7 @@ interface CategoryProps {
 export default function CategoriesMenu({ onSelect }: CategoryProps) {
   const [open, setOpen] = useState(false);
 
-  const categories = ["Xbox Series X", "Nintendo Switch", "PlayStation 5", "PC"];
+  const categories = ["Xbox Series X", "Nintendo Switch", "PS5", "PC"];
 
   return (
     <div style={{ marginBottom: "20px", position: "relative" }}>

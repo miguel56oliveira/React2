@@ -6,6 +6,10 @@ import Games from "./pages/Games.tsx";
 import GameDetails from "./pages/GameDetails.tsx";
 import Search from "./pages/Search.tsx";
 import Contact from "./pages/Contact.tsx";
+import Login from "./pages/Login.tsx";
+import Register from "./pages/Register";
+import Cart from "./pages/Cart";
+
 
 function App() {
   return (
@@ -18,6 +22,9 @@ function App() {
           <Route path="/jogo/:id" element={<GameDetails />} />
           <Route path="/pesquisa/:texto" element={<Search />} />
           <Route path="/contacto" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/carrinho" element={<Cart />} /> 
         </Routes>
       </div>
       <Footer />
